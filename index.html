@@ -4,28 +4,21 @@
 <head>
   <meta charset="UTF-8" />
   <link rel="icon" type="image/png" href="./assets/favicon.png">
-  <title>Wine Storage Temperature Monitor</title>
+  <title>Personal Image View Tool</title>
   <!-- Import Styles -->
   <link rel="stylesheet" href="./assets/styles.css" />
-  <!-- Import Vue.js -->
-  <script src="https://unpkg.com/vue@next/dist/vue.global.prod.js"></script>
-  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-  <script src="https://unpkg.com/chart.js@3.0.2"></script>
-  <script src="https://unpkg.com/chartjs-adapter-date-fns@2.0.0/dist/chartjs-adapter-date-fns.bundle.js"></script>
-  <script src="https://unpkg.com/chartkick@4.0.2"></script>
-  <script src="https://unpkg.com/vue-chartkick@1.1.0"></script>
-  <link href="https://unpkg.com/nprogress@0.2.0/nprogress.css" rel="stylesheet" />
-  <script src="https://unpkg.com/nprogress@0.2.0/nprogress.js"></script> 
+    <!-- Import Vue.js -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  
 </head>
 
 <body>
+
+  <h3 class="banner">Personal Image View Tool</h3>
+
   <div id="app">
-    <div class="nav-bar">
-      <li class="banner">Temperature Readings in current Wine Storage</li>
-    </div>
-    <div class="content">
-      <display></display>
-    </div> 
+    {{message}}
+    <display></display>
   </div>
 
   <!-- Import App -->
@@ -33,11 +26,10 @@
 
   <!-- Import Components -->
   <script src="./components/Display.js"></script>
-  <!-- Mount App -->
   <script>
-    app.use(VueChartkick)
-    const mountedApp = app.mount('#app')   
+      app.mount('#app')
   </script>
+
 </body>
 
 </html>
