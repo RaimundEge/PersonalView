@@ -2,7 +2,8 @@ app.component('display', {
     template:
         /*html*/
         `<div class="display"> 
-            word         </div>`,
+            word
+        </div>`,
     data() {
         return {
             temps: null,

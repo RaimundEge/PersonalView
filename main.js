@@ -1,7 +1,7 @@
 const app = Vue.createApp({
     data() {
       return {
-        message: 'Hello Vue!'
+        title: 'Personal Image View Tool'
       }
     }
   })
