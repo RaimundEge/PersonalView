@@ -1,0 +1,1 @@
+ffmpeg -ss 1 -y -i VID_20221023_110007765.mp4 -r 1 -frames 1 -s 300x200 poster.jpg
