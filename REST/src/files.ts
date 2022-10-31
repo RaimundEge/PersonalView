@@ -13,7 +13,7 @@ export default (folder: any) => {
         for (var fileName of dirContents) {           
             if (fs.statSync(path.join(BASEPATH, folderPath, fileName)).isDirectory()) {
                 console.log('directory ' + fileName)
-                itemInfos.push({status: 'dir', src: path.join(folderPath, fileName)})
+                itemInfos.push({status: 'dir', src: fileName})
             } else {               
                 itemInfos.push(getThumbs(folder, fileName))
             }
