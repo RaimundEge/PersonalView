@@ -2,7 +2,7 @@ custom index processing
     express server returns thumbnails and source link
     thumbnails generated on demand and stored for lookup
     need mechanism for update
-    return is makred as partial/final
+    return is marked as partial/final
 
 Vue.js viewer
     shows thunbnails and links

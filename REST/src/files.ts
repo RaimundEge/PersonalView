@@ -51,7 +51,7 @@ function getThumbs(folder: string, fileName: string) {
                     console.log(`stderr: ${stderr}`);
                     return;
                 }
-                console.log(`stdout: ${stdout}`);
+                // console.log(`stdout: ${stdout}`);
             });
         }
     } else {
