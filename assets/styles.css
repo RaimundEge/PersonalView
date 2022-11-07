@@ -1,3 +1,21 @@
+.display {
+    display: grid;
+}
+
+.container {
+    position: relative;
+    text-align: center;
+    color: black;
+}
+
+.folder-text {
+    position: absolute;
+    top: 60%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 120%;
+}
+
 .light-box__thumbnail {
     margin: 20px;
     width: 200px;

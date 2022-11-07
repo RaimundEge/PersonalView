@@ -3,9 +3,15 @@ app.component('display', {
     /*html*/
     `<div class="display"> 
         {{ query }} contains {{ count }} items <br>
-            <div v-for="(item, index) in items" :key="item">
-              <img @click="lightboxEffect(index)"  :src="item.thumb" class="light-box__thumbnail">
+            <div v-for="(item, index) in items" :key="item" @click="lightboxEffect(index)" >
+              <div v-if="item.status=='dir'" class="container">
+                <img :src="item.thumb" :alt="item.caption" style="width:10%;">
+                <div class="folder-text">{{ item.caption }}</div>
+              </div>
+              <div v-else>
+              <img :src="item.thumb" class="light-box__thumbnail">
               {{ item.caption }}
+              </div>
             </div>
             <transition name="fade" mode="out-in">
                 <div @click.stop="bg = !bg" class="light-box__bg" v-if="bg"></div>
@@ -20,7 +26,7 @@ app.component('display', {
         
                 <div v-if="bg" class="light-box__container">
                     <transition name="fade" mode="out-in">
-                        <img :key="currentImage" :src="items[currentImage].src" class="light-box__container__img" >
+                        <img :key="currentImage" :src="items[currentImage].src" class="light-box__container__img" style="width:100%;">
                     </transition>
                 </div>
         
@@ -46,7 +52,7 @@ app.component('display', {
       // console.log(resp.data);
       this.items = resp.data.items;
       for (var item of this.items) {
-        console.log(item)
+        // console.log(item)
         if (item.status == 'dir') {
           item.thumb = 'assets/folder.svg'
           item.caption = item.src.split('/').pop() || ''

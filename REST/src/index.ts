@@ -11,8 +11,12 @@ const port = process.env.PORT||3000;
 app.use(cors());
 
 app.get('/', (req, res) => {
-  console.log('Query: ' + req.query.opt)
-  res.send(JSON.stringify(getFolderData(req.query.opt)))
+  if (req.query.opt) {
+    console.log('Query: ' + req.query.opt)
+    res.send(JSON.stringify(getFolderData(req.query.opt)))
+  } else {
+    res.send("query argument missing")
+  }
 })
 
 app.listen(port, () => {
