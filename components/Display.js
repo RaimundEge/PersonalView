@@ -1,14 +1,18 @@
 app.component('display', {
   template:
     /*html*/
-    `<div class="display"> 
-        {{ query }} contains {{ count }} items <br>
+    `<h3>Ege Family Pictures: {{ query }} ( {{ count }} items )</h3>
+    <div class="display"> 
             <div v-for="(item, index) in items" :key="item" @click="lightboxEffect(index)" >
-              <div v-if="item.status=='dir'" class="container">
-                <img :src="item.thumb" :alt="item.caption" style="width:10%;">
+              <div v-if="item.status=='dir'" class="folder">
+                <img :src="item.thumb" :alt="item.caption" style="width: 200px">
                 <div class="folder-text">{{ item.caption }}</div>
               </div>
-              <div v-else>
+              <div v-if="item.status=='ok'" class="thumbnail">
+                <img :src="item.thumb" :alt="item.caption" >
+                <div class="thumbnail-text">{{ item.caption }}</div>
+              </div>
+              <div v-if="item.status=='wait'">
               <img :src="item.thumb" class="light-box__thumbnail">
               {{ item.caption }}
               </div>
