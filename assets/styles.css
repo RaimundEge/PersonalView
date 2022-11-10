@@ -1,11 +1,11 @@
 .display {
     display: grid;
-    grid-template-columns: repeat( auto-fit, minmax(210px, 1fr) );
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
 }
 
 .folder {
     position: relative;
-    text-align: center;   
+    text-align: center;
 }
 
 .folder-text {
@@ -14,6 +14,45 @@
     left: 50%;
     transform: translate(-50%, -50%);
     font-size: 120%;
+}
+
+.query-item {
+    color: blue;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.container {
+    position: absolute;
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    max-width: 900px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    max-height: 800px;
+}
+
+.container-image {
+    align-self: center;
+}
+
+.container-caption {
+    color: #fff;
+    font-size: 20px;
+}
+
+.thumbnail {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.thumbnail-caption {
+    font-size: 90%;
 }
 
 .light-box__thumbnail {
@@ -59,22 +98,6 @@
     background-position: center;
 }
 
-.light-box__container {
-    position: absolute;
-    z-index: 2000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    max-width: 900px;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    min-height: 800px;
-}
-
-.light-box__container__img {
-    align-self: center;
-}
 
 .light-box__btn {
     background-size: contain;
@@ -112,16 +135,6 @@
     transform: translateY(-50%);
 }
 
-.light-box__caption {
-    bottom: 0;
-    width: 100%;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    color: #fff;
-    font-size: 20px;
-    justify-content: center;
-}
 
 .light-box__count {
     left: 20px;

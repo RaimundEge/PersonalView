@@ -12,8 +12,8 @@ app.use(cors());
 
 app.get('/', (req, res) => {
   if (req.query.opt) {
-    console.log('Query: ' + req.query.opt)
-    res.send(JSON.stringify(getFolderData(req.query.opt)))
+    console.log('Query: ' + req.query.opt + ' ' + req.query.waiting)
+    res.send(JSON.stringify(getFolderData(req.query.opt, req.query.waiting)))
   } else {
     res.send("query argument missing")
   }

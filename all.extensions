@@ -2,23 +2,28 @@ gif
 mp4
 MP4
 avi
-sfk
 JPG
-psd
-THM
 MTS
 wmv
-exe
 MOV
 WAV
 png
 3gp
 AVI
 TIF
-dthumb
 jpg
 amr
 webm
 mov
-DSC
 wav
+
+sfk
+psd
+THM
+exe
+dthumb
+DSC
+
+<span v-for="(item,index) in split(query)" :key="q" @click=
+
+<span v-html="formatQuery(query)" />
