@@ -10,21 +10,10 @@ app.component('display', {
     &nbsp; ( {{ count }} items )</h3>
     <div class="display"> 
             <div v-for="(item, index) in items" :key="item" @click="lightboxEffect(index)" >
-              <div v-if="item.status=='dir'" class="folder">
-                <img :src="item.thumb" :alt="item.caption">
-                <div class="folder-text">{{ item.caption }}</div>
-              </div>
-              <div v-if="item.status=='down'" class="thumbnail">
-                <a :href="item.src"><img :src="item.thumb" :alt="item.caption"></a>
-                <div class="folder-text">{{ item.caption }}</div>
-              </div>
-              <div v-if="!(item.status=='dir'||item.status=='down')" class="thumbnail">
-                <img :src="item.thumb" :alt="item.caption" >
-                <div class="thumbnail-caption">{{ item.caption }}</div>
-              </div>
+              <span v-html="showThumb(item)"></span>
             </div>
             <transition name="fade" mode="out-in">
-                <div @click.stop="bg = !bg" class="light-box__bg" v-if="bg"></div>
+                <div @click.stop="bg = !bg" class="background" v-if="bg"></div>
             </transition>
     
             <div v-if="bg">
@@ -64,22 +53,8 @@ app.component('display', {
         this.items = resp.data.items;
         for (var item of this.items) {
           // console.log(item)
-          item.caption = item.src.split('/').pop() || ''
-          switch (item.status) {
-            case 'dir':
-              item.thumb = 'assets/folder.png'
-              break;
-            case 'wait':
-              item.thumb = 'assets/waiting-small.gif'
-              waiting = true
-              break;
-            case 'bad':
-              item.thumb = 'assets/broken.png'
-              // console.log('bad: ' + item.src)
-              break;
-            case 'other':
-              item.thumb = 'assets/question-mark.png'
-              break;
+          if (item.status == 'wait') {
+            waiting = true;
           }
         }
         // console.log('start waiting')
@@ -103,6 +78,31 @@ app.component('display', {
           result = '<img src="assets/folder.png"/>'
           break;
       }
+      return result;
+    },
+    showThumb(item) {
+      var result = '';
+      item.caption = item.src.split('/').pop() || '';
+      switch (item.status) {
+        case 'down':
+          result = `<div class="thumb"><a href="${item.src}"><img src="${item.thumb}"></a><img src="assets/download.png" class="thumb-icon"><div class="thumb-caption">${item.caption}</div></div>`;
+          break;
+        case 'dir':
+          result = `<div class="thumb"><img src="assets/folder.png"><div class="folder-text">${item.caption}</div></div>`;
+          break;
+        case 'wait':
+          result = `<div class="thumb"><img src="assets/waiting.gif"><div class="thumb-caption">${item.caption}</div></div>`;
+          break;
+        case 'bad':
+          result = `<div class="thumb"><img src="assets/broken.png"><div class="thumb-caption">${item.caption}</div></div>`;
+          break;
+        case 'other':
+          result = `<div class="thumb"><img src="assets/question-mark.png"><div class="thumb-caption">${item.caption}</div></div>`;
+          break;
+        default:
+          result = `<div class="thumb"><img src="${item.thumb}"><div class="thumb-caption">${item.caption}</div></div>`;
+      }
+      console.log('result: ' + result)
       return result;
     },
     lightboxEffect(curr) {
