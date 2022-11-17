@@ -1,39 +1,40 @@
 app.component('display', {
   template:
     /*html*/
-    `<h3>Ege Family Pictures: 
-    
-    <span v-for="(item,index) in query.split('/')" :key="item" @click="jumpTo(index)">
-      &nbsp; <span class="query-item">{{ formatItem(item) }}</span>
-    </span>
-    
-    &nbsp; ( {{ count }} items )</h3>
-    <div class="display"> 
-            <div v-for="(item, index) in items" :key="item" @click="lightboxEffect(index)" >
-              <span v-html="showThumb(item)"></span>
-            </div>
-            <transition name="fade" mode="out-in">
-                <div @click.stop="bg = !bg" class="background" v-if="bg"></div>
-            </transition>
-    
-            <div v-if="bg">
-                <div class="light-box__close" @click.stop="bg = !bg"></div>
-                <p class="light-box__count" v-if="count">
-                    {{currentImage + 1 }}/<span>{{ items.length}}</span>
-                </p>
-                <div @click="prev" class="light-box__prev light-box__btn"></div>
-        
-                <div v-if="bg" class="container">
-                    <transition name="fade" mode="out-in">
-                        <span v-html="show(currentImage)"></span>
-                    </transition>       
-                    <div class="container-caption" v-if="items[currentImage].caption">
-                        <p>{{ items[currentImage].caption }}</p>
-                    </div>
-                </div>
-                <div @click="next" class="light-box__next light-box__btn"></div>
-            </div>
-        </div>`,
+    `<div class="display">
+      <div class="header">
+      <h3>Ege Family Pictures:       
+      <span v-for="(item,index) in query.split('/')" :key="item" @click="jumpTo(index)">
+        &nbsp; <span class="query-item">{{ formatItem(item) }}</span>
+      </span>     
+      &nbsp; ( {{ count }} items )</h3>
+      </div>
+      <div class="thumb-area"> 
+          <div v-for="(item, index) in items" :key="item" @click="lightboxEffect(index)" >
+            <span v-html="showThumb(item)"></span>
+          </div>
+      </div>
+    </div>  
+
+    <div v-if="bg" class="lightbox">
+      <transition name="fade" mode="out-in">
+        <div @click.stop="bg = !bg" class="background" v-if="bg"></div>
+      </transition>
+      <p class="lightbox-count" v-if="count">
+          {{currentImage + 1 }}/<span>{{ items.length}}</span>
+      </p>
+      <div class="lightbox-close" @click.stop="bg = !bg"></div>
+      <div @click="prev" class="lightbox-prev lightbox-btn"></div>
+      <div @click="next" class="lightbox-next lightbox-btn"></div>
+      <div class="container">
+          <transition name="fade" mode="out-in">
+              <span v-html="show(currentImage)"></span>
+          </transition>       
+          <div class="container-caption" v-if="items[currentImage].caption">
+              <p>{{ items[currentImage].caption }}</p>
+          </div>
+      </div>         
+    </div>`,
   data() {
     return {
       query: '.',
@@ -102,7 +103,7 @@ app.component('display', {
         default:
           result = `<div class="thumb"><img src="${item.thumb}"><div class="thumb-caption">${item.caption}</div></div>`;
       }
-      console.log('result: ' + result)
+      // console.log('result: ' + result)
       return result;
     },
     lightboxEffect(curr) {

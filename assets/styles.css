@@ -1,11 +1,18 @@
-.display {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+.header {
+    position: fixed;
+    top: 0px;
+    left: 20px;
 }
 
-.folder {
-    position: relative;
-    text-align: center;
+.thumb-area {
+    position: fixed;
+    top: 60px;
+    width: 100%;
+    max-height: calc(100vh - 60px);
+    overflow-x: hidden;
+    overflow-y: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
 }
 
 .folder-text {
@@ -37,6 +44,14 @@
     transform: translate(-50%, -50%);
 }
 
+.lightbox {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+}
+
 .container {
     position: absolute;
     z-index: 2000;
@@ -63,15 +78,6 @@
     font-size: 20px;
 }
 
-.light-box__thumbnail {
-    margin: 20px;
-    width: 190px;
-}
-
-.light-box__thumbnail__img {
-    max-width: 100%;
-}
-
 .fade-enter-active,
 .fade-leave-active {
     transition: opacity 0.2s;
@@ -92,11 +98,7 @@
     z-index: 1000;
 }
 
-.light-box__thumbnail {
-    cursor: pointer;
-}
-
-.light-box__close {
+.lightbox-close {
     padding: 10px;
     position: absolute;
     right: 20px;
@@ -106,45 +108,42 @@
     background-position: center;
 }
 
-
-.light-box__btn {
+.lightbox-btn {
     background-size: contain;
     background-position: center;
     align-self: center;
     padding: 15px;
 }
 
-.light-box__close,
-.light-box__btn {
+.lightbox-close,
+.lightbox-btn {
     cursor: pointer;
 }
 
-.light-box__close,
-.light-box__btn,
-.light-box__caption,
-.light-box__count {
+.lightbox-close,
+.lightbox-btn,
+.lightbox-count {
     position: absolute;
     z-index: 3000;
 }
 
-.light-box__next {
+.lightbox-next {
     background-image: url(lightbox/next.svg);
     right: 20px;
 }
 
-.light-box__prev {
+.lightbox-prev {
     background-image: url(lightbox/prev.svg);
     left: 20px;
 }
 
-.light-box__next,
-.light-box__prev {
+.lightbox-next,
+.lightbox-prev {
     top: 50%;
     transform: translateY(-50%);
 }
 
-
-.light-box__count {
+.lightbox-count {
     left: 20px;
     font-size: 26px;
     color: #fff;
