@@ -17,10 +17,11 @@
 
 .folder-text {
     position: absolute;
-    top: 60%;
+    top: 55%;
     left: 50%;
     transform: translate(-50%, -50%);
     font-size: 120%;
+    color: darkslateblue
 }
 
 .query-item {
@@ -59,18 +60,15 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 80%;
-    max-width: 900px;
-    max-height: 800px;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
 }
 
 .container-image {
-    align-self: center;
-    max-width: 100%;
-    max-height: 100%;
+    max-width: 90vw;
+    max-height: 90vh;
+    padding-top: 2em;
 }
 
 .container-caption {
@@ -94,7 +92,7 @@
     top: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.89);
+    background-color: rgba(0, 0, 0, 0.75);
     z-index: 1000;
 }
 

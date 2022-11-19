@@ -26,20 +26,22 @@ app.component('display', {
       <div class="lightbox-close" @click.stop="bg = !bg"></div>
       <div @click="prev" class="lightbox-prev lightbox-btn"></div>
       <div @click="next" class="lightbox-next lightbox-btn"></div>
-      <div class="container">
-          <transition name="fade" mode="out-in">
-              <span v-html="show(currentImage)"></span>
-          </transition>       
+      <transition name="fade" mode="out-in">
+        <div class="container">
+          <div v-html="show(currentImage)"></div>              
           <div class="container-caption" v-if="items[currentImage].caption">
               <p>{{ items[currentImage].caption }}</p>
           </div>
-      </div>         
+        </div> 
+      </transition> 
+              
     </div>`,
   data() {
     return {
       query: '.',
       items: [],
       bg: false,
+      onLoad: true,
       currentImage: 0
     }
   },
@@ -49,7 +51,7 @@ app.component('display', {
       var waiting = false;
       do {
         var resp = await axios.get('http://media:3000/?opt=' + this.query + '&waiting=' + waiting)
-        // console.log(resp.data);
+        console.log(resp.data);
         waiting = false
         this.items = resp.data.items;
         for (var item of this.items) {
@@ -70,7 +72,7 @@ app.component('display', {
       var item = this.items[index];
       switch (item.status) {
         case 'image':
-          result = '<img src="' + item.src + '" class="container-image" style="width:100%;"></img>';
+          result = '<img src="' + item.src + '" class="container-image"></img>';
           break;
         case 'video':
           result = '<video autoplay class="container-image" style="width:100%;"><source src="' + item.src + '" type="video/mp4"></video>';
@@ -98,7 +100,10 @@ app.component('display', {
           result = `<div class="thumb"><img src="assets/broken.png"><div class="thumb-caption">${item.caption}</div></div>`;
           break;
         case 'other':
-          result = `<div class="thumb"><img src="assets/question-mark.png"><div class="thumb-caption">${item.caption}</div></div>`;
+          result = `<div class="thumb"><img src="assets/question.png"><div class="thumb-caption">${item.caption}</div></div>`;
+          break;
+        case 'audio':
+          result = `<div class="thumb"><a href="${item.src}"><img src="assets/audio.gif"><img src="assets/download.png" class="thumb-icon"></a><div class="thumb-caption">${item.caption}</div></div>`;
           break;
         default:
           result = `<div class="thumb"><img src="${item.thumb}"><div class="thumb-caption">${item.caption}</div></div>`;
@@ -108,7 +113,7 @@ app.component('display', {
     },
     lightboxEffect(curr) {
       var item = this.items[curr]
-      console.log(item)
+      // console.log(item)
       switch (item.status) {
         case 'dir':
           this.query = this.query + '/' + item.src;
@@ -158,9 +163,10 @@ app.component('display', {
   },
   computed: {
     count() {
-      console.log(this.items)
-      console.log(this.query)
-      if (this.items.length === 0) {
+      // console.log(this.items)
+      // console.log(this.query)
+      if (this.onLoad) {
+        this.onLoad = false;
         this.getItems()
         return 0
       } else {

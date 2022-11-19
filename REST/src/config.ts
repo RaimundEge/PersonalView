@@ -1,5 +1,5 @@
 export const IMGTYPES = [ 
-    "png", "jpg", "JPG", "gif", "TIF"
+    "png", "jpg", "JPG", "gif", "TIF", "psd"
 ]
 
 export const VIDTYPES = [
