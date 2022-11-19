@@ -54,10 +54,12 @@ app.component('display', {
         console.log(resp.data);
         waiting = false
         this.items = resp.data.items;
-        for (var item of this.items) {
-          // console.log(item)
-          if (item.status == 'wait') {
-            waiting = true;
+        if (this.items) {
+          for (var item of this.items) {
+            // console.log(item)
+            if (item.status == 'wait') {
+              waiting = true;
+            }
           }
         }
         // console.log('start waiting')
@@ -75,7 +77,7 @@ app.component('display', {
           result = '<img src="' + item.src + '" class="container-image"></img>';
           break;
         case 'video':
-          result = '<video autoplay class="container-image" style="width:100%;"><source src="' + item.src + '" type="video/mp4"></video>';
+          result = '<video autoplay class="container-image"><source src="' + item.src + '" type="video/mp4"></video>';
           break;
         case 'dir':
           result = '<img src="assets/folder.png"/>'
