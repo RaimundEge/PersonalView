@@ -1,0 +1,14 @@
+[Unit]
+Description=Personal View Service
+After=network.target
+
+[Service]
+User=ege
+WorkingDirectory=/home/ege/PersonalView/REST
+ExecStart=/home/ege/PersonalView/REST/run
+StandardOutput=file:/home/ege/PersonalView/REST/logFile
+StandardError=file:/home/ege/PersonalView/REST/logFile
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

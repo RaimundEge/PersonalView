@@ -1,0 +1,4 @@
+#! /bin/bash
+LOGFILE=/home/ege/PersonalView/REST/log.txt
+rm -rf $LOGFILE
+npm start >& $LOGFILE

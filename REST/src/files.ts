@@ -6,7 +6,7 @@ import { IMGTYPES, VIDTYPES, AUDTYPES, DOWNTYPES, BASEPATH, SRCPATH, THUMBSPATH 
 
 const inProgress: string[] = [];
 const inWait = new Map<string, string>();
-const MAXJOBS = 5;
+const MAXJOBS = 4;
 const badFiles: string[] = [];
 
 export default (folder: any, waiting: any) => {
@@ -14,6 +14,8 @@ export default (folder: any, waiting: any) => {
         inProgress.length = 0;
         inWait.clear();
         badFiles.length = 0;
+    } else {
+        console.log(`making: ${inProgress.length}, waiting: ${inWait.size}, bad: ${badFiles.length}` )
     }
     var folderPath = path.join(SRCPATH, folder)
     try {
@@ -101,15 +103,15 @@ function getThumbs(folder: string, fileName: string) {
 };
 
 async function makeThumb(to: string, cmd: string) {
-    console.log('inProgress length: ' + inProgress.length)
+    // console.log('inProgress length: ' + inProgress.length)
     if (inProgress.includes(to) || inWait.has(to)) {
-        console.log('in progress or waiting: ' + to)
+        // console.log('in progress or waiting: ' + to)
     } else {
-        if (inProgress.length <= MAXJOBS) {
-            console.log('Making: ' + to)
+        if (inProgress.length < MAXJOBS) {
+            // console.log('Making: ' + to)
             runNextJob(to, cmd);
         } else {
-            console.log('Waiting: ' + to)
+            // console.log('Waiting: ' + to)
             inWait.set(to, cmd);
         }
     }
@@ -129,7 +131,7 @@ async function runNextJob(to: string, cmd: string) {
         const index = inProgress.indexOf(to, 0);
         if (index > -1) {
             inProgress.splice(index, 1);
-            console.log('inProgress removing: ', to);
+            // console.log('inProgress removing: ', to);
         }
         // check whether output was generated
         if (!fs.existsSync(path.join(BASEPATH, to))) {
@@ -140,7 +142,7 @@ async function runNextJob(to: string, cmd: string) {
         if (inWait.size > 0) {
             let [to, cmd] = [...inWait][0];
             inWait.delete(to);
-            console.log("removed from waiting: " + to);
+            // console.log("removed from waiting: " + to);
             runNextJob(to, cmd);
         }
     });
