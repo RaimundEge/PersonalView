@@ -87,7 +87,7 @@ app.component('display', {
     },
     showThumb(item) {
       var result = '';
-      item.caption = item.src.split('/').pop() || '';
+      item.caption = this.prepCaption(item.src);
       switch (item.status) {
         case 'down':
           result = `<div class="thumb"><a href="${item.src}"><img src="${item.thumb}"></a><img src="assets/download.png" class="thumb-icon"><div class="thumb-caption">${item.caption}</div></div>`;
@@ -112,6 +112,15 @@ app.component('display', {
       }
       // console.log('result: ' + result)
       return result;
+    },
+    prepCaption(src) {
+      var cap = src.split('/').pop() || '';
+      if (cap.length > 30) {
+        // console.log('cap length: ' + cap.length)
+        cap = cap.substring(0,10) + ' ... ' + cap.substring(cap.length-10);
+      }
+      
+      return cap;
     },
     lightboxEffect(curr) {
       var item = this.items[curr]
