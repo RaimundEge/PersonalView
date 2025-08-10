@@ -3,11 +3,19 @@ app.component('display', {
     /*html*/
     `<div class="display">
       <div class="header">
-      <h3>Ege Family Pictures:       
-      <span v-for="(item,index) in query.split('/')" :key="item" @click="jumpTo(index)">
-        &nbsp; <span class="query-item">{{ formatItem(item) }}</span>
-      </span>     
-      &nbsp; ( {{ count }} items )</h3>
+        <h3>Ege Family Pictures:       
+        <span v-for="(item,index) in query.split('/')" :key="item" @click="jumpTo(index)">
+          &nbsp; <span class="query-item">{{ formatItem(item) }}</span>
+        </span>     
+        &nbsp; ( {{ count }} items )</h3>
+      </div>
+      <div class="tools" @click="tools=!tools">Tools</div>
+      <div v-if="tools" class="toolbox">
+          <h3>Available Tools</h3><div class="toolbox-close" @click.stop="tools = false"></div>
+          <ul>
+            <li v-if=!dupActive class="tool-select" @click="checkDuplicates()">Check for duplicate items</li>
+            <li v-if="currentCount != 0"><div v-if=dupActive>Processing</div> {{currentCount}} files</li>
+          </ul>
       </div>
       <div class="thumb-area"> 
           <div v-for="(item, index) in items" :key="item" @click="lightboxEffect(index)" >
@@ -33,14 +41,16 @@ app.component('display', {
               <p>{{ items[currentImage].caption }}</p>
           </div>
         </div> 
-      </transition> 
-              
+      </transition>              
     </div>`,
   data() {
     return {
       query: '.',
       items: [],
       bg: false,
+      tools: false,
+      currentCount: 0,
+      dupActive: false,
       onLoad: true,
       currentImage: 0
     }
@@ -170,7 +180,29 @@ app.component('display', {
       }
       // console.log('new: ' + this.query)
       this.getItems()
-    }
+    },
+    async checkDuplicates() {
+      console.log("checkDuplicates")
+      this.dupActive = true;
+      this.getCount();
+      var resp = await axios.get('http://media:3000/checkDuplicates');
+      console.log(resp.data);
+      this.dupActive = false;
+    },
+    async getCount() {
+      
+      do {
+        await this.delay(100);
+        console.log("getCount")
+        var resp = await axios.get('http://media:3000/getCount');
+        console.log(resp.data);
+        this.currentCount = resp.data.value;         
+      } while (this.dupActive) 
+    },
+    delay(ms) {
+      return new Promise( resolve => setTimeout(resolve, ms) 
+    );
+}
   },
   computed: {
     count() {

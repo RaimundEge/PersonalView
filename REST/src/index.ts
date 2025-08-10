@@ -2,6 +2,7 @@ import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import cors from "cors";
 import getFolderData from './files'
+import { count, checkDuplicates } from './dups';
 
 dotenv.config();
 
@@ -17,6 +18,18 @@ app.get('/', (req, res) => {
   } else {
     res.send("query argument missing")
   }
+})
+
+app.get('/checkDuplicates', (req, res) => {
+  count.value = 0;
+  count.status = "checking";
+  checkDuplicates('.');
+  count.status = "done";
+  res.send("working on it: " + JSON.stringify(count)) 
+})
+
+app.get('/getCount', (req, res) => {
+  res.send(count);
 })
 
 app.listen(port, () => {

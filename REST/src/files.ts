@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as run from 'child_process'
+import * as run from 'child_process';
 
 import { IMGTYPES, VIDTYPES, AUDTYPES, DOWNTYPES, BASEPATH, SRCPATH, THUMBSPATH } from './config';
 
