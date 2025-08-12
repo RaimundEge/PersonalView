@@ -17,3 +17,6 @@ export const DOWNTYPES = [
 export const BASEPATH = '/var/www/html/personal'
 export const SRCPATH = 'perSource'
 export const THUMBSPATH = 'perCache'
+export const MONGO_URL = 'mongodb://blitz:27017/personal'
+export const MONGO_DBNAME = 'personal';
+export const MONGO_COLLECTION = 'images';

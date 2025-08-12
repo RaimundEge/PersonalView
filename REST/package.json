@@ -16,7 +16,9 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
+    "is-hidden-file": "^1.1.2",
     "json": "^11.0.0",
+    "mongodb": "^6.18.0",
     "ts-node": "^10.9.1"
   },
   "devDependencies": {

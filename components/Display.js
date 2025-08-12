@@ -13,8 +13,12 @@ app.component('display', {
       <div v-if="tools" class="toolbox">
           <h3>Available Tools</h3><div class="toolbox-close" @click.stop="tools = false"></div>
           <ul>
-            <li v-if=!dupActive class="tool-select" @click="checkDuplicates()">Check for duplicate items</li>
-            <li v-if="currentCount != 0"><div v-if=dupActive>Processing</div> {{currentCount}} files</li>
+            <li>
+              <div v-if=!dupActive class="tool-select" @click="checkDuplicates()">Check for duplicate items</div><div v-if="currentCount != 0"> {{currentCount}} files</div>
+            </li>
+            <li v-if="!dupActive && currentCount != 0">
+              <div class="tool-select" @click="getDuplicates()">Get duplicates</div>
+            </li>
           </ul>
       </div>
       <div class="thumb-area"> 
@@ -187,22 +191,30 @@ app.component('display', {
       this.getCount();
       var resp = await axios.get('http://media:3000/checkDuplicates');
       console.log(resp.data);
-      this.dupActive = false;
+      // this.dupActive = false;
     },
-    async getCount() {
-      
+    async getCount() {     
       do {
-        await this.delay(100);
+        await this.delay(1000);
         console.log("getCount")
         var resp = await axios.get('http://media:3000/getCount');
         console.log(resp.data);
+        if (this.currentCount == resp.data.value) {
+          console.log('no change in count, stopping');
+          this.dupActive = false;
+          break;
+        }
         this.currentCount = resp.data.value;         
       } while (this.dupActive) 
     },
     delay(ms) {
-      return new Promise( resolve => setTimeout(resolve, ms) 
-    );
-}
+      return new Promise( resolve => setTimeout(resolve, ms));
+    },
+    async getDuplicates() {
+      console.log("getDuplicates")
+      var resp = await axios.get('http://media:3000/getDuplicates');
+      console.log(resp.data); 
+    }
   },
   computed: {
     count() {
