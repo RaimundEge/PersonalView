@@ -15,16 +15,15 @@ export async function checkDuplicates(folder: any) {
         // console.log(dirContents);
         var itemInfos = []
         for (var fileName of dirContents) {
-            if (fs.statSync(path.join(folderPath, fileName)).isDirectory()) {
+            var stats = fs.statSync(path.join(folderPath, fileName));
+            if (stats.isDirectory()) {
                 // console.log('directory: ' + fileName);
                 itemInfos.push(path.join(folder, fileName));
             } else {
                 // console.log('file: ' + fileName)
-                if (isHiddenFile(fileName)) {
-                    console.log('skipping hidden file: ' + path.join(folder, fileName));
-                    continue;
-                }
-                addImage({name: fileName, path: folder});
+                if (checkFileName(fileName)) {
+                    addImage({name: fileName, size: stats.size, path: folder});
+                }               
             }
             count.value++
         }
@@ -40,3 +39,14 @@ export async function checkDuplicates(folder: any) {
     }
 
 };
+
+function checkFileName(name: any) {
+    let skip = false
+    if (isHiddenFile(name)) skip = true;
+    if (name == "Folder.jpg") skip = true;
+    if (name == "Thumbs.db") skip = true;
+    // if (skip) {
+    //     console.log('skipping file: ' + name);
+    // }
+    return !skip;
+}
