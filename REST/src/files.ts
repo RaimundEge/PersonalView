@@ -21,8 +21,12 @@ export default (folder: any, waiting: any) => {
     try {
         const dirContents = fs.readdirSync(path.join(BASEPATH, folderPath));
         // console.log(dirContents);
-        var itemInfos = []
+        var itemInfos = [];
         for (var fileName of dirContents) {
+            if (folder == '.' && !fileName.match(/^2[0-9]{3}$/)) {
+                // console.log('skipping: ' + fileName);
+                continue;
+            }
             if (fs.statSync(path.join(BASEPATH, folderPath, fileName)).isDirectory()) {
                 // console.log('directory ' + fileName)
                 itemInfos.push({ status: 'dir', src: fileName })

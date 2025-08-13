@@ -9,19 +9,23 @@ app.component('display', {
         </span>     
         &nbsp; ( {{ count }} items )</h3>
       </div>
-      <div class="tools" @click="tools=!tools">Tools</div>
+      <div class="tools" @click="tools=!tools;getCount()">Tools</div>
       <div v-if="tools" class="toolbox">
           <h3>Available Tools</h3><div class="toolbox-close" @click.stop="tools = false"></div>
-          <ul>
-            <li>
-              <div v-if=!dupActive class="tool-select" @click="checkDuplicates()">Check for duplicate items</div><div v-if="currentCount != 0"> {{currentCount}} files</div>
-            </li>
-            <li v-if="!dupActive && currentCount != 0">
-              <div class="tool-select" @click="getDuplicates()">Get duplicates</div>
-            </li>
-          </ul>
+          <span style="display: flex">
+          <button @click="checkDuplicates()" :disabled="dupActive">Check for duplicate items</button>&nbsp;
+          <button @click="getCount()">Refresh</button>&nbsp;
+          <div v-if="currentCount != 0"> {{currentCount}} files</div>
+          </span>
+          <button v-if="currentCount != 0" @click="getDuplicates()" :disabled="dupActive">Get duplicates</button>
+          <button v-if="dupFolders.length != 0" @click="showDuplicates()" :disabled="dupActive">Show duplicates</button>
       </div>
-      <div class="thumb-area"> 
+      <div v-if="dupFolders.length != 0" class="thumb-area"> 
+          <div v-for="(item, index) in dupFolders" :key="item">
+            <span v-html="showDupFolder(item)"></span>
+          </div>
+      </div>
+      <div v-if="dupFolders.length == 0" class="thumb-area"> 
           <div v-for="(item, index) in items" :key="item" @click="lightboxEffect(index)" >
             <span v-html="showThumb(item)"></span>
           </div>
@@ -53,8 +57,9 @@ app.component('display', {
       items: [],
       bg: false,
       tools: false,
-      currentCount: 0,
       dupActive: false,
+      currentCount: 0,
+      dupFolders: [],
       onLoad: true,
       currentImage: 0
     }
@@ -127,6 +132,11 @@ app.component('display', {
       // console.log('result: ' + result)
       return result;
     },
+    showDupFolder(item) {
+      item.caption = this.prepCaption(item.name);    
+      result = `<div class="thumb"><img src="assets/folder.png"><div class="folder-text">${item.caption}</div></div>`;
+      return result;
+    },
     prepCaption(src) {
       var cap = src.split('/').pop() || '';
       if (cap.length > 30) {
@@ -193,27 +203,17 @@ app.component('display', {
       console.log(resp.data);
       // this.dupActive = false;
     },
-    async getCount() {     
-      do {
-        await this.delay(1000);
-        console.log("getCount")
-        var resp = await axios.get('http://media:3000/getCount');
-        console.log(resp.data);
-        if (this.currentCount == resp.data.value) {
-          console.log('no change in count, stopping');
-          this.dupActive = false;
-          break;
-        }
-        this.currentCount = resp.data.value;         
-      } while (this.dupActive) 
-    },
-    delay(ms) {
-      return new Promise( resolve => setTimeout(resolve, ms));
+    async getCount() {          
+      console.log("getCount")
+      var resp = await axios.get('http://media:3000/getCount');
+      console.log(resp.data);
+      this.currentCount = resp.data.value;         
     },
     async getDuplicates() {
       console.log("getDuplicates")
       var resp = await axios.get('http://media:3000/getDuplicates');
       console.log(resp.data); 
+      this.dupFolders= resp.data;
     }
   },
   computed: {

@@ -31,9 +31,6 @@
     background-image: url(lightbox/close.svg);
     cursor: pointer;
 }
-.tool-select {
-    cursor: pointer;
-}
 
 .thumb-area {
     position: relative;

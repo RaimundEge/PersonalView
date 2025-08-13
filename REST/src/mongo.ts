@@ -16,9 +16,9 @@ export async function getDuplicates() {
     if (!db) {
         db = await dbPromise.then((client) => client.db(MONGO_DBNAME));
     }
-    console.log('Looking for Duplicates: ');
+    // console.log('Looking for Duplicates: ');
     const result = await db.collection(MONGO_COLLECTION).find({$expr: {$gt: [ {$size: "$paths"}, 1]}}).toArray();
-    console.log(result.length + ' duplicates found' );
+    // console.log(result.length + ' duplicates found' );
     return result;
 }
 

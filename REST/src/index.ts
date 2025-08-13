@@ -1,9 +1,8 @@
 import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import cors from "cors";
-import { getDuplicates } from './mongo';
 import getFolderData from './files';
-import { count, checkDuplicates} from './dups';
+import { count, checkDuplicates, getFoldersWithDuplicates} from './dups';
 
 dotenv.config();
 
@@ -23,18 +22,17 @@ app.get('/', (req, res) => {
 
 app.get('/checkDuplicates', (req, res) => {
   count.value = 0;
-  count.status = "checking";
   checkDuplicates('.');
   count.status = "done";
-  res.send("working on it: " + JSON.stringify(count)) 
-})
+  res.send("working on it: " + JSON.stringify(count));
+ })
 
 app.get('/getCount', (req, res) => {
   res.send(count);
 })
 
 app.get('/getDuplicates', async (req, res) => {
-  const duplicates = await getDuplicates();
+  const duplicates = await getFoldersWithDuplicates();
   res.send(duplicates);
 })
 
