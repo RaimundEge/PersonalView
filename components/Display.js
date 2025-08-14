@@ -7,11 +7,11 @@ app.component('display', {
         <span v-for="(item,index) in query.split('/')" :key="item" @click="jumpTo(index)">
           &nbsp; <span class="query-item">{{ formatItem(item) }}</span>
         </span>     
-        &nbsp; ( {{ count }} items )</h3>
+        &nbsp; ( {{ count }} items , {{ uniqueCount }} unique files )</h3>
       </div>
-      <div class="tools" @click="tools=!tools;getCount()">Tools</div>
+      <div class="tools" @click="toggleTools()">Tools</div>
       <div v-if="tools" class="toolbox">
-          <h3>Available Tools</h3><div class="toolbox-close" @click.stop="tools = false"></div>
+          <h3>Available Tools</h3><div class="toolbox-close" @click.stop="toggleTools()"></div>
           <span style="display: flex">
           <button @click="checkDuplicates()" :disabled="dupActive">Check for duplicate items</button>&nbsp;
           <button @click="getCount()">Refresh</button>&nbsp;
@@ -25,7 +25,7 @@ app.component('display', {
             <span v-html="showDupFolder(item)"></span>
           </div>
       </div>
-      <div v-if="dupFolders.length == 0" class="thumb-area"> 
+      <div v-if="page=='main'" class="thumb-area"> 
           <div v-for="(item, index) in items" :key="item" @click="lightboxEffect(index)" >
             <span v-html="showThumb(item)"></span>
           </div>
@@ -56,10 +56,12 @@ app.component('display', {
       query: '.',
       items: [],
       bg: false,
-      tools: false,
-      dupActive: false,
-      currentCount: 0,
-      dupFolders: [],
+      tools: false,   // indicates whether toolbox is open
+      dupActive: false, // indicates whether file occurrences are being checked
+      currentCount: 0,  // number of unique files in personal
+      dupFolders: [],   // array of folders that contain duplicate files
+      page: "main",     // current page content: main, dupFolder, folderDups
+      NProgress: NProgress,
       onLoad: true,
       currentImage: 0
     }
@@ -195,6 +197,12 @@ app.component('display', {
       // console.log('new: ' + this.query)
       this.getItems()
     },
+    toggleTools() {
+      this.tools = !this.tools;
+      if (!this.tools) {
+        this.page = "main";
+      }
+    },
     async checkDuplicates() {
       console.log("checkDuplicates")
       this.dupActive = true;
@@ -203,11 +211,14 @@ app.component('display', {
       console.log(resp.data);
       // this.dupActive = false;
     },
-    async getCount() {          
+    getCount() {          
       console.log("getCount")
-      var resp = await axios.get('http://media:3000/getCount');
-      console.log(resp.data);
-      this.currentCount = resp.data.value;         
+      axios.get('http://media:3000/getCount').then(resp => {
+        console.log(resp.data);
+        this.currentCount = resp.data.value; 
+      }).catch(err => {
+        console.error("Error fetching count:", err);
+      });       
     },
     async getDuplicates() {
       console.log("getDuplicates")
@@ -227,6 +238,10 @@ app.component('display', {
       } else {
         return this.items.length
       }
+    },
+    uniqueCount() {
+      console.log("uniqueCount")
+      return this.currentCount;
     }
   }
 })

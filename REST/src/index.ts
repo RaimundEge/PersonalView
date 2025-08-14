@@ -28,6 +28,7 @@ app.get('/checkDuplicates', (req, res) => {
  })
 
 app.get('/getCount', (req, res) => {
+  console.log("getCount called");
   res.send(count);
 })
 
