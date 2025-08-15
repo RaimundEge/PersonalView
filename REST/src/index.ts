@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import cors from "cors";
 import getFolderData from './files';
 import { count, checkDuplicates, getFoldersWithDuplicates} from './dups';
+import { getCount } from './mongo';
 
 dotenv.config();
 
@@ -29,7 +30,18 @@ app.get('/checkDuplicates', (req, res) => {
 
 app.get('/getCount', (req, res) => {
   console.log("getCount called");
-  res.send(count);
+  if (count.value == 0) {
+    getCount('images').then((result) => {
+      count.value = result;
+      count.status = "stale";
+      res.send(count);
+    }).catch((err) => {
+      console.error("Error fetching count:", err);
+      res.status(500).send({ status: 'error', message: 'Failed to fetch count' });
+    });
+  } else {
+    res.send(count);
+  }
 })
 
 app.get('/getDuplicates', async (req, res) => {

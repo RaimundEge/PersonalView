@@ -17,12 +17,17 @@ app.component('display', {
           <button @click="getCount()">Refresh</button>&nbsp;
           <div v-if="currentCount != 0"> {{currentCount}} files</div>
           </span>
-          <button v-if="currentCount != 0" @click="getDuplicates()" :disabled="dupActive">Get duplicates</button>
-          <button v-if="dupFolders.length != 0" @click="showDuplicates()" :disabled="dupActive">Show duplicates</button>
+          <button v-if="currentCount != 0" @click="getDuplicates()" :disabled="dupActive">Get duplicates</button>&nbsp;
+          <button v-if="dupFolders.length != 0" @click="showFolderDups()" :disabled="dupActive">Show duplicates</button>
       </div>
-      <div v-if="dupFolders.length != 0" class="thumb-area"> 
-          <div v-for="(item, index) in dupFolders" :key="item">
+      <div v-if="page=='folderDups'" class="thumb-area folderDups"> 
+          <div v-for="(item, index) in dupFolders" :key="item" @click="showFolderWithDups(index)" >
             <span v-html="showDupFolder(item)"></span>
+          </div>
+      </div>
+      <div v-if="page=='dupFolder'" class="thumb-area folderDups"> 
+          <div v-for="(item, index) in dupFolders[currentDupFolder].files" :key="item" @click="handleDuplicate(index)" >
+            <span v-html="showDups(item)"></span>
           </div>
       </div>
       <div v-if="page=='main'" class="thumb-area"> 
@@ -63,7 +68,8 @@ app.component('display', {
       page: "main",     // current page content: main, dupFolder, folderDups
       NProgress: NProgress,
       onLoad: true,
-      currentImage: 0
+      currentImage: 0,
+      currentDupFolder: 0 // current folder with duplicates
     }
   },
   methods: {
@@ -134,9 +140,22 @@ app.component('display', {
       // console.log('result: ' + result)
       return result;
     },
+    showFolderDups(curr) {
+      this.page = "folderDups";
+      this.currentDupFolder = curr;
+    },
     showDupFolder(item) {
-      item.caption = this.prepCaption(item.name);    
+      item.caption = this.prepCaption(item.name) + ' (' + item.files.length + ')';   
+      // console.log("showDupFolder: " + item.caption); 
       result = `<div class="thumb"><img src="assets/folder.png"><div class="folder-text">${item.caption}</div></div>`;
+      return result;
+    },
+    showFolderWithDups(index) {
+      this.page = "dupFolder";
+      this.currentDupFolder = index;
+    },
+    showDups(item) {
+      result = `<div><img src="perCache/${this.dupFolders[this.currentDupFolder].name}/${item.name}">${item.name}</div>`;
       return result;
     },
     prepCaption(src) {
@@ -145,7 +164,7 @@ app.component('display', {
         // console.log('cap length: ' + cap.length)
         cap = cap.substring(0,10) + ' ... ' + cap.substring(cap.length-10);
       }
-      
+      // console.log('new caption: ' + cap);
       return cap;
     },
     lightboxEffect(curr) {
@@ -240,7 +259,10 @@ app.component('display', {
       }
     },
     uniqueCount() {
-      console.log("uniqueCount")
+      console.log("uniqueCount");
+      if (this.currentCount == 0) {
+        this.getCount();
+      }
       return this.currentCount;
     }
   }

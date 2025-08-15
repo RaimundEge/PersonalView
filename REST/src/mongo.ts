@@ -12,6 +12,13 @@ export async function find(key: any) {
   return result;
 }
 
+export async function getCount(collection: string) {
+  const db = await dbPromise.then((client) => client.db(MONGO_DBNAME));
+  const result = await db.collection(collection).countDocuments();
+  console.log(collection + ' size: ' + result)
+  return result;
+}
+
 export async function getDuplicates() {
     if (!db) {
         db = await dbPromise.then((client) => client.db(MONGO_DBNAME));
