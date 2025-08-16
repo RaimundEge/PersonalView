@@ -2,8 +2,7 @@ import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import cors from "cors";
 import getFolderData from './files';
-import { count, checkDuplicates, getFoldersWithDuplicates} from './dups';
-import { getCount } from './mongo';
+import { All, count, checkDuplicates, getFoldersWithDuplicates} from './dupsNew';
 
 dotenv.config();
 
@@ -11,6 +10,7 @@ const app: Express = express();
 const port = process.env.PORT||3000;
 
 app.use(cors());
+app.use(express.json()); // This parses JSON bodies
 
 app.get('/', (req, res) => {
   if (req.query.opt) {
@@ -24,29 +24,31 @@ app.get('/', (req, res) => {
 app.get('/checkDuplicates', (req, res) => {
   count.value = 0;
   checkDuplicates('.');
+  console.log(All.length + " unique files");
   count.status = "done";
-  res.send("working on it: " + JSON.stringify(count));
+  res.send(count);
  })
 
 app.get('/getCount', (req, res) => {
-  console.log("getCount called");
-  if (count.value == 0) {
-    getCount('images').then((result) => {
-      count.value = result;
-      count.status = "stale";
-      res.send(count);
-    }).catch((err) => {
-      console.error("Error fetching count:", err);
-      res.status(500).send({ status: 'error', message: 'Failed to fetch count' });
-    });
-  } else {
-    res.send(count);
-  }
+  // console.log("getCount called");  
+    count.value = All.length;
+    count.status = "stale";
+    res.send(count); 
 })
 
 app.get('/getDuplicates', async (req, res) => {
-  const duplicates = await getFoldersWithDuplicates();
+  const duplicates = getFoldersWithDuplicates();
   res.send(duplicates);
+})
+
+app.post('/deleteDup', (req, res) => {
+  // console.log('deleteDup called with: ', req.body);
+  if (req.body.folder && req.body.file) {
+    console.log('Deleting: ' + req.body.folder + ' ' + req.body.file)
+    res.send({status: "will do eventually"});
+  } else {
+    res.send("query argument missing")
+  }
 })
 
 app.listen(port, () => {

@@ -18,7 +18,7 @@
     padding: 20px 0px 20px 10px;
     display: inline-block;
     height: 100px;
-    width: 95%;
+    width: 98%;
     border-color: darkgray;
     border-width: 2px;
     border-style: solid;
@@ -43,12 +43,32 @@
 }
 
 .folderDups {
-    margin: 10px;
-    padding: 20px 0px 20px 10px;
-    width: 95%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+}
+
+.dupFolders{
+    position: relative;
+    margin: 0px;
+    padding: 10px;
     border-color: darkgray;
     border-width: 2px;
     border-style: solid;
+}
+.dup {
+    display: flex;
+    margin: 10px;
+}
+.dup-content {
+    margin-left: 10px;
+    display: grid;
+    grid-template-rows: minmax(210px, 1fr);
+}
+.dup-other {
+    margin-top: 5px;
+    font-size: larger;
+    color: darkslateblue;
+    cursor: pointer;
 }
 
 .folder-text {

@@ -7,27 +7,34 @@ app.component('display', {
         <span v-for="(item,index) in query.split('/')" :key="item" @click="jumpTo(index)">
           &nbsp; <span class="query-item">{{ formatItem(item) }}</span>
         </span>     
-        &nbsp; ( {{ count }} items , {{ uniqueCount }} unique files )</h3>
+        &nbsp; ( {{ count }} items, {{ uniqueCount }} unique files, {{ dupFolders.length }} duplicate files )</h3>
       </div>
       <div class="tools" @click="toggleTools()">Tools</div>
       <div v-if="tools" class="toolbox">
           <h3>Available Tools</h3><div class="toolbox-close" @click.stop="toggleTools()"></div>
           <span style="display: flex">
-          <button @click="checkDuplicates()" :disabled="dupActive">Check for duplicate items</button>&nbsp;
-          <button @click="getCount()">Refresh</button>&nbsp;
-          <div v-if="currentCount != 0"> {{currentCount}} files</div>
+          <button @click="checkDuplicates()" :disabled="page!='main'">Check for duplicate items</button>&nbsp;          
+          <button v-if="dupFolders.length != 0" @click="showFolderDups()">Show duplicates</button>
           </span>
-          <button v-if="currentCount != 0" @click="getDuplicates()" :disabled="dupActive">Get duplicates</button>&nbsp;
-          <button v-if="dupFolders.length != 0" @click="showFolderDups()" :disabled="dupActive">Show duplicates</button>
       </div>
-      <div v-if="page=='folderDups'" class="thumb-area folderDups"> 
+      <div v-if="page=='folderDups'" class="dupFolders folderDups"> 
           <div v-for="(item, index) in dupFolders" :key="item" @click="showFolderWithDups(index)" >
             <span v-html="showDupFolder(item)"></span>
           </div>
       </div>
-      <div v-if="page=='dupFolder'" class="thumb-area folderDups"> 
-          <div v-for="(item, index) in dupFolders[currentDupFolder].files" :key="item" @click="handleDuplicate(index)" >
-            <span v-html="showDups(item)"></span>
+      <div v-if="page=='dupFolder'" class="dupFolders"> 
+          <h3>{{dupFolders[currentDupFolder].name}}</h3>
+          <div v-for="(item, index) in dupFolders[currentDupFolder].files" :key="item">
+            <div class="dup">
+                  <img :src="createSrc(item)">
+                  <div class="dup-content">
+                    <span>Name: {{item.name}} appears in: {{item.others.length}} other folders:</span>
+                    <div v-for="other in item.others" :key="other" class="dup-other">
+                      <span @click="goto(other)">{{other}}</span> &nbsp;
+                      <button @click="deleteDup(other, item)">Delete</button>
+                    </div>
+                  </div>
+            </div>
           </div>
       </div>
       <div v-if="page=='main'" class="thumb-area"> 
@@ -36,7 +43,6 @@ app.component('display', {
           </div>
       </div>
     </div>  
-
     <div v-if="bg" class="lightbox">
       <transition name="fade" mode="out-in">
         <div @click.stop="bg = !bg" class="background" v-if="bg"></div>
@@ -63,7 +69,7 @@ app.component('display', {
       bg: false,
       tools: false,   // indicates whether toolbox is open
       dupActive: false, // indicates whether file occurrences are being checked
-      currentCount: 0,  // number of unique files in personal
+      uniqueCount: 0,  // number of unique files in personal
       dupFolders: [],   // array of folders that contain duplicate files
       page: "main",     // current page content: main, dupFolder, folderDups
       NProgress: NProgress,
@@ -95,6 +101,12 @@ app.component('display', {
       } while (waiting)
       NProgress.done()
       // console.log(Object.keys(this.groups).length + " number of groups")
+    },
+    goto(newQuery) {
+      this.query = newQuery;
+      this.page = "main";
+      this.tools = false;
+      this.getItems();
     },
     show(index) {
       var result = '';
@@ -154,8 +166,8 @@ app.component('display', {
       this.page = "dupFolder";
       this.currentDupFolder = index;
     },
-    showDups(item) {
-      result = `<div><img src="perCache/${this.dupFolders[this.currentDupFolder].name}/${item.name}">${item.name}</div>`;
+    createSrc(item) {
+      result = `perCache/${this.dupFolders[this.currentDupFolder].name}/${item.name}`;
       return result;
     },
     prepCaption(src) {
@@ -214,12 +226,17 @@ app.component('display', {
         }
       }
       // console.log('new: ' + this.query)
+      this.page = "main";
+      this.tools = false;     
       this.getItems()
     },
     toggleTools() {
       this.tools = !this.tools;
       if (!this.tools) {
         this.page = "main";
+      }
+      if (this.tools && this.dupFolders.length == 0) {
+        this.getDuplicates();
       }
     },
     async checkDuplicates() {
@@ -234,7 +251,7 @@ app.component('display', {
       console.log("getCount")
       axios.get('http://media:3000/getCount').then(resp => {
         console.log(resp.data);
-        this.currentCount = resp.data.value; 
+        this.uniqueCount = resp.data.value; 
       }).catch(err => {
         console.error("Error fetching count:", err);
       });       
@@ -244,7 +261,18 @@ app.component('display', {
       var resp = await axios.get('http://media:3000/getDuplicates');
       console.log(resp.data); 
       this.dupFolders= resp.data;
-    }
+    },
+    deleteDup(other, item) {
+      console.log("deleteDup: " + other + ", " + item.name);
+      axios.post('http://media:3000/deleteDup', { folder: other, file: item.name })
+        .then(resp => {
+          console.log(resp.data);
+          // this.getDuplicates();
+        })
+        .catch(err => {
+          console.error("Error deleting duplicate:", err);
+        });
+    } 
   },
   computed: {
     count() {
@@ -257,13 +285,6 @@ app.component('display', {
       } else {
         return this.items.length
       }
-    },
-    uniqueCount() {
-      console.log("uniqueCount");
-      if (this.currentCount == 0) {
-        this.getCount();
-      }
-      return this.currentCount;
     }
   }
 })

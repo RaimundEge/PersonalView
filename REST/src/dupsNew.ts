@@ -3,11 +3,17 @@ import * as path from 'path';
 import { isHiddenFile } from "is-hidden-file";
 import * as run from 'child_process';
 import { BASEPATH, SRCPATH, THUMBSPATH } from './config';
-import { addImage, getDuplicates } from './mongo';
 
 export var count = { status: 'none', value: 0};
 
-export async function checkDuplicates(folder: any) {  
+interface Image {
+    name: string;
+    size: number;
+    paths: string[];    
+}
+export const All: Image[] = [];
+
+export function checkDuplicates(folder: any) {  
     var folderPath = path.join(BASEPATH, SRCPATH, folder);
     // console.log('checkDuplicates in folder: ' + folderPath);
     try {
@@ -55,8 +61,36 @@ function checkFileName(name: any) {
     return !skip;
 }
 
-export async function getFoldersWithDuplicates() {
-    var dups = await getDuplicates();
+function addImage(record: any) {
+    // console.log('checking: ', record);
+    var result = null;
+    for (const item of All) {
+        if (item.name === record.name && item.size === record.size) {
+            result = item;
+            break;
+        }
+    }
+    if (!result) {
+        // console.log('inserting: ', record);
+        All.push({ name: record.name, size: record.size, paths: [ record.path ]});
+    } else { 
+        console.log('found: ', result);           
+        var pathList = result.paths.filter((r: any) => r == record.path);
+        if (pathList.length == 0) {           
+            console.log('adding path: ', record.path);
+            result.paths.push(record.path);
+        }      
+    }
+} 
+
+export function getFoldersWithDuplicates() {
+    // console.log('Looking for Duplicates: ');
+    var dups = [];
+    for (const image of All) {
+        if (image.paths.length > 1) {
+            dups.push(image);
+        }
+    }
     console.log(dups.length + ' duplicates found');
     const folders: any = [];
     for (const file of dups) {
@@ -70,7 +104,7 @@ export async function getFoldersWithDuplicates() {
                 }
             }
             const fileCopy = { name: file.name, others: others };
-            // check whether path is already in folders
+            // check whether path is already in folders 
             var found = false;
             for (const f of folders) {
                 if (f.name == path) {

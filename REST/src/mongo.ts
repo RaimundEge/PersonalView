@@ -25,7 +25,7 @@ export async function getDuplicates() {
     }
     // console.log('Looking for Duplicates: ');
     const result = await db.collection(MONGO_COLLECTION).find({$expr: {$gt: [ {$size: "$paths"}, 1]}}).toArray();
-    // console.log(result.length + ' duplicates found' );
+    // console.log(result.length + ' duplicates found');
     return result;
 }
 
