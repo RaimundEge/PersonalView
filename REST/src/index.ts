@@ -22,12 +22,9 @@ app.get('/', (req, res) => {
 })
 
 app.get('/checkDuplicates', (req, res) => {
-  count.value = 0;
-  checkDuplicates('.');
-  console.log(All.length + " unique files");
-  count.duplicates = count.value - All.length;
-  count.status = "done";
+  count.status = "in progress";
   res.send(count);
+  checkDuplicates('.');
  })
 
 app.get('/getUniqueCount', (req, res) => {
@@ -35,6 +32,11 @@ app.get('/getUniqueCount', (req, res) => {
     count.value = All.length;
     count.status = "stale";
     res.send(count); 
+})
+
+app.get('/getCount', (req, res) => {
+  // console.log("getCount called");
+  res.send(count);
 })
 
 app.get('/getFoldersWithDuplicates', async (req, res) => {
@@ -49,7 +51,7 @@ app.post('/deleteDup', (req, res) => {
     deleteDup(req.body.folder, req.body.file);
     res.send({status: "file recycled"});
   } else {
-    res.send("query argument missing")
+    res.send("query arguments missing")
   }
 })
 

@@ -13,7 +13,17 @@ interface Image {
 }
 export const All: Image[] = [];
 
-export function checkDuplicates(folder: any) {  
+export async function checkDuplicates(folder: any) {
+    // console.log('checkDuplicates called for folder: ' + folder);
+    count.value = 0;
+    All.length = 0; // clear the All array
+    checkDuplicatesSync(folder);
+    console.log(All.length + " unique files");
+    count.duplicates = count.value - All.length;
+    count.status = "done";
+}
+
+function checkDuplicatesSync(folder: any) {  
     var folderPath = path.join(BASEPATH, SRCPATH, folder);
     // console.log('checkDuplicates in folder: ' + folderPath);
     try {
@@ -39,7 +49,7 @@ export function checkDuplicates(folder: any) {
         // console.log(itemInfos);
         for (var item of itemInfos) {
             // console.log(item);
-            checkDuplicates(item);
+            checkDuplicatesSync(item);
         }
         return;
     } catch (e) {
@@ -91,7 +101,7 @@ export function getFoldersWithDuplicates() {
             dups.push(image);
         }
     }
-    console.log(dups.length + ' duplicates found');
+    console.log(dups.length + ' files that are stored in more than one folder found');
     const folders: any = [];
     for (const file of dups) {
         // loop over paths

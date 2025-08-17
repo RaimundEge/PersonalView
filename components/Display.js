@@ -247,6 +247,11 @@ app.component('display', {
     async countUniqueFiles() {
       console.log("calling checkDuplicates")
       var resp = await axios.get('http://media:3000/checkDuplicates');
+      while (resp.data.status !== "done") {
+        console.log("waiting for duplicates to be counted");
+        await new Promise(r => setTimeout(r, 1000));
+        resp = await axios.get('http://media:3000/getCount');
+      }
       console.log("countUniqueFiles: " + JSON.stringify(resp.data));
       this.fileCount = resp.data.value;
       this.dupCount = resp.data.duplicates;
