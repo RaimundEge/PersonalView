@@ -53,14 +53,6 @@ app.post('/deleteDup', (req, res) => {
   }
 })
 
-const server = app.listen(port, () => {
+app.listen(port, () => {
   console.log(`PersonalView REST app listening on port ${port}`)
 })
-
-process.once('SIGINT', () => {
-    console.log('Received SIGINT. Closing server...');
-    server.close(() => {
-      console.log('Server closed. Exiting process...');
-      process.exit(0);
-    });
-});
