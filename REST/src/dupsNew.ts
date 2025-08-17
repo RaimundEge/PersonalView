@@ -4,7 +4,7 @@ import { isHiddenFile } from "is-hidden-file";
 import * as run from 'child_process';
 import { BASEPATH, SRCPATH, THUMBSPATH } from './config';
 
-export var count = { status: 'none', value: 0};
+export var count = { status: 'none', value: 0, duplicates: 0};
 
 interface Image {
     name: string;
@@ -35,7 +35,6 @@ export function checkDuplicates(folder: any) {
                     addImage({name: fileName, size: stats.size, path: folder});
                 }               
             }
-            count.value++
         }
         // console.log(itemInfos);
         for (var item of itemInfos) {
@@ -62,7 +61,8 @@ function checkFileName(name: any) {
 }
 
 function addImage(record: any) {
-    // console.log('checking: ', record);
+    if (count.value%1000==0) console.log(count.value + ' files checked');
+    count.value++  
     var result = null;
     for (const item of All) {
         if (item.name === record.name && item.size === record.size) {
@@ -74,10 +74,10 @@ function addImage(record: any) {
         // console.log('inserting: ', record);
         All.push({ name: record.name, size: record.size, paths: [ record.path ]});
     } else { 
-        console.log('found: ', result);           
+        // console.log('found: ', result);           
         var pathList = result.paths.filter((r: any) => r == record.path);
         if (pathList.length == 0) {           
-            console.log('adding path: ', record.path);
+            // console.log('adding path: ', record.path);
             result.paths.push(record.path);
         }      
     }
@@ -120,4 +120,20 @@ export function getFoldersWithDuplicates() {
         }
     }
     return folders;
-}   
+}  
+
+export function deleteDup(folder: string, file: string) {
+    // console.log('deleteDup called with: ', folder, file);   
+    const fromPath = path.join(BASEPATH, SRCPATH, folder);
+    const filePath = path.join(fromPath, file);
+    const toPath = path.join(BASEPATH, SRCPATH, 'RecycleBin', folder);
+    if (fs.existsSync(filePath)) {
+        if (!fs.existsSync(toPath)) {
+            fs.mkdirSync(toPath, { recursive: true });
+        }
+        console.log(filePath + ' recycled to: ' + toPath);
+        fs.renameSync(filePath, path.join(toPath, file));
+    } else {
+        console.log('File not found: ' + filePath);
+    }
+}

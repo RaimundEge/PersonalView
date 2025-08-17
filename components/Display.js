@@ -4,16 +4,24 @@ app.component('display', {
     `<div class="display">
       <div class="header">
         <h3>Ege Family Pictures:       
-        <span v-for="(item,index) in query.split('/')" :key="item" @click="jumpTo(index)">
-          &nbsp; <span class="query-item">{{ formatItem(item) }}</span>
-        </span>     
-        &nbsp; ( {{ count }} items, {{ uniqueCount }} unique files, {{ dupFolders.length }} duplicate files )</h3>
+          <span v-for="(item,index) in query.split('/')" :key="item" @click="jumpTo(index)">
+            &nbsp; <span class="query-item">{{ formatItem(item) }}</span>
+          </span>     
+          &nbsp; 
+          ( {{ count }} items )
+        </h3>
       </div>
       <div class="tools" @click="toggleTools()">Tools</div>
       <div v-if="tools" class="toolbox">
           <h3>Available Tools</h3><div class="toolbox-close" @click.stop="toggleTools()"></div>
+
+          <div>{{ fileCount }} files in personal</div>
+          <div>{{ dupCount }} duplicate files in personal</div>
+          <div>{{ dupFolders.length }} folders with duplicate files</div>
+
           <span style="display: flex">
-          <button @click="checkDuplicates()" :disabled="page!='main'">Check for duplicate items</button>&nbsp;          
+          <button @click="countUniqueFiles()" :disabled="page!='main'">Count unique files</button>&nbsp; 
+          <button @click="getFoldersWithDuplicates()" :disabled="fileCount == 0 || page!='main'">Get folders with duplicates</button>&nbsp;         
           <button v-if="dupFolders.length != 0" @click="showFolderDups()">Show duplicates</button>
           </span>
       </div>
@@ -67,9 +75,9 @@ app.component('display', {
       query: '.',
       items: [],
       bg: false,
-      tools: false,   // indicates whether toolbox is open
-      dupActive: false, // indicates whether file occurrences are being checked
-      uniqueCount: 0,  // number of unique files in personal
+      tools: false,     // indicates whether toolbox is open
+      fileCount: 0,     // number of files in personal
+      dupCount: 0,      // number of duplicate files in personal
       dupFolders: [],   // array of folders that contain duplicate files
       page: "main",     // current page content: main, dupFolder, folderDups
       NProgress: NProgress,
@@ -84,7 +92,7 @@ app.component('display', {
       var waiting = false;
       do {
         var resp = await axios.get('http://media:3000/?opt=' + this.query + '&waiting=' + waiting)
-        console.log(resp.data);
+        // console.log(resp.data);
         waiting = false
         this.items = resp.data.items;
         if (this.items) {
@@ -235,39 +243,35 @@ app.component('display', {
       if (!this.tools) {
         this.page = "main";
       }
-      if (this.tools && this.dupFolders.length == 0) {
-        this.getDuplicates();
-      }
     },
-    async checkDuplicates() {
-      console.log("checkDuplicates")
-      this.dupActive = true;
-      this.getCount();
+    async countUniqueFiles() {
+      console.log("calling checkDuplicates")
       var resp = await axios.get('http://media:3000/checkDuplicates');
-      console.log(resp.data);
-      // this.dupActive = false;
+      console.log("countUniqueFiles: " + JSON.stringify(resp.data));
+      this.fileCount = resp.data.value;
+      this.dupCount = resp.data.duplicates;
     },
-    getCount() {          
-      console.log("getCount")
-      axios.get('http://media:3000/getCount').then(resp => {
-        console.log(resp.data);
+    getUniqueCount() {          
+      // console.log("getUniqueCount")
+      axios.get('http://media:3000/getUniqueCount').then(resp => {
+        console.log('Unique count: ' + resp.data);
         this.uniqueCount = resp.data.value; 
       }).catch(err => {
         console.error("Error fetching count:", err);
       });       
     },
-    async getDuplicates() {
-      console.log("getDuplicates")
-      var resp = await axios.get('http://media:3000/getDuplicates');
-      console.log(resp.data); 
+    async getFoldersWithDuplicates() {
+      console.log("getFoldersWithDuplicates")
+      var resp = await axios.get('http://media:3000/getFoldersWithDuplicates');
       this.dupFolders= resp.data;
+      console.log(this.dupFolders.length + " folders with duplicates");
     },
+      
     deleteDup(other, item) {
       console.log("deleteDup: " + other + ", " + item.name);
       axios.post('http://media:3000/deleteDup', { folder: other, file: item.name })
         .then(resp => {
           console.log(resp.data);
-          // this.getDuplicates();
         })
         .catch(err => {
           console.error("Error deleting duplicate:", err);
