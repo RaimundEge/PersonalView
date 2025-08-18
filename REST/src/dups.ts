@@ -16,6 +16,7 @@ export const All: Image[] = [];
 export async function checkDuplicates(folder: any) {
     // console.log('checkDuplicates called for folder: ' + folder);
     count.value = 0;
+    count.status = "running";
     All.length = 0; // clear the All array
     checkDuplicatesSync(folder);
     console.log(All.length + " unique files");
@@ -71,7 +72,7 @@ function checkFileName(name: any) {
 }
 
 function addImage(record: any) {
-    if (count.value%1000==0) console.log(count.value + ' files checked');
+    if (count.value%1000==0) process.stdout.write('.');
     count.value++  
     var result = null;
     for (const item of All) {
@@ -143,6 +144,11 @@ export function deleteDup(folder: string, file: string) {
         }
         console.log(filePath + ' recycled to: ' + toPath);
         fs.renameSync(filePath, path.join(toPath, file));
+        var dirContents = fs.readdirSync(fromPath);
+        if (dirContents.length == 0) {
+            console.log('deleting empty folder: ' + fromPath);
+            fs.rmdirSync(fromPath);
+        }
     } else {
         console.log('File not found: ' + filePath);
     }

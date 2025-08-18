@@ -2,7 +2,7 @@ import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import cors from "cors";
 import getFolderData from './files';
-import { All, count, checkDuplicates, getFoldersWithDuplicates, deleteDup} from './dupsNew';
+import { All, count, checkDuplicates, getFoldersWithDuplicates, deleteDup} from './dups';
 
 dotenv.config();
 
@@ -21,16 +21,19 @@ app.get('/', (req, res) => {
   }
 })
 
-app.get('/checkDuplicates', (req, res) => {
-  count.status = "in progress";
-  res.send(count);
-  checkDuplicates('.');
+app.post('/countUniqueFiles', (req, res) => {
+  console.log("countUniqueFiles called with: ", req.body);
+  if (req.body.folder) {
+    checkDuplicates(req.body.folder);
+    res.send(count);
+  } else {
+    res.send("query argument missing")
+  }
  })
 
 app.get('/getUniqueCount', (req, res) => {
   // console.log("getCount called");  
-    count.value = All.length;
-    count.status = "stale";
+    count.status = "running";
     res.send(count); 
 })
 

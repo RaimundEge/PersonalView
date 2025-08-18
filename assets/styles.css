@@ -60,14 +60,18 @@
 }
 .dup-content {
     margin-left: 10px;
-    display: grid;
-    grid-template-rows: minmax(210px, 1fr);
 }
 .dup-other {
     margin-top: 5px;
     font-size: larger;
     color: darkslateblue;
     cursor: pointer;
+}
+.dup-image {
+    max-width: 150px;
+    max-height: 150px;;
+    object-fit: cover;
+    border-radius: 5px;
 }
 
 .folder-text {
